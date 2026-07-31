@@ -1,121 +1,71 @@
-# Highridge Construction Company - Payment System
+# NYC Taxi Trip Clustering with K-Means
 
-## What is this?
+A Python application that clusters New York City yellow-taxi trip records
+(January 2024) from the [AWS Registry of Open Data](https://registry.opendata.aws/nyc-tlc-trip-records-pds/)
+using a K-Means algorithm implemented from scratch with NumPy.
 
-This is a simple program that helps calculate weekly payments for construction workers. It can handle lots of workers at once and automatically figures out their pay based on their salary and hours worked.
+## Dataset
 
-## What does it do?
+- **Name:** NYC Taxi and Limousine Commission (TLC) Trip Record Data
+- **Provider:** City of New York, published on AWS (`s3://nyc-tlc`, us-east-1)
+- **License:** NYC TLC terms of use (free, public)
+- **File:** `yellow_tripdata_2024-01.parquet` (~2.96M trips, ~48 MB)
+- **Direct download:** `https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet`
 
-- Creates fake worker data (names, salaries, departments)
-- Calculates how much each worker should be paid
-- Saves all the payment information to a file
-- Shows a summary of all payments
+## Features used for clustering
 
-## How workers are classified
+| Feature | Description |
+|---|---|
+| `trip_distance` | Trip distance in miles |
+| `trip_duration_min` | Drop-off minus pick-up time, in minutes (engineered) |
+| `avg_speed_mph` | Average trip speed in mph (engineered: distance / duration) |
+| `fare_amount` | Fare in USD |
+| `tip_amount` | Tip in USD |
+| `passenger_count` | Number of passengers |
+| `pickup_hour` | Hour of day the trip started (engineered) |
 
-The program puts workers into different groups:
+Cleaning: drops records with negative/zero fares, distances over 100 mi,
+durations outside 1-720 min, speeds over 90 mph, more than 6 passengers, and
+unparseable dates.
+All features are standardised (zero mean, unit variance) before clustering.
 
-1. **A1 Level**: Workers earning between $10,000 and $20,000 per year
-2. **A5-F Level**: Female workers earning between $7,500 and $30,000 per year
-3. **Standard Level**: Everyone else
+## How to run
 
-## Files in this project
+**Quickest way (one command):**
 
-- `payment_system.py` - The main Python program
-- `payment_system.R` - The same program written in R language
-- `README.md` - This help file
-- `requirements.txt` - List of things Python needs to run the program
-- `highridge_payment_slips.json` - The output file with all payment data
-
-## How to run the Python version
-
-### What you need first
-- Python installed on your computer
-- A terminal or command prompt
-
-### Steps to run
-1. Open your terminal
-2. Go to the folder with these files
-3. Type: `python3 payment_system.py`
-4. Press Enter and wait for it to finish
-
-### If you get errors
-Try installing the required packages first:
+```bash
+./run.sh        # macOS / Linux (first run sets everything up automatically)
 ```
+
+```bat
+run.bat         # Windows
+```
+
+**Manually:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+python main.py                       # full pipeline, k chosen via elbow method
+python main.py --k 4 --sample 50000  # fixed k / smaller sample
 ```
 
-## How to run the R version
+The ~48MB dataset is downloaded automatically on first run; you don't need to ship it.
 
-### What you need first
-- R installed on your computer
+Outputs (in `results/`):
+- `elbow_plot.png` — within-cluster sum of squares vs k
+- `cluster_scatter.png` — distance vs fare/tip, coloured by cluster
+- `pca_view.png` — 2-D PCA projection of the clusters
+- `cluster_profiles.csv` — median profile per cluster
+- `clustered_trips.csv` — cleaned sample with cluster labels
+- `run_summary.csv` — parameters and fit statistics
 
-### Steps to run
-1. Open your terminal
-2. Go to the folder with these files
-3. Type: `Rscript payment_system.R`
-4. Press Enter and wait for it to finish
+## Tests
 
-### If you get errors
-You might need to install some R packages first. Open R and type:
-```r
-install.packages(c("jsonlite", "dplyr"))
+```bash
+pytest tests/ -v
 ```
 
-## What happens when you run it
-
-1. The program creates 450 fake workers
-2. It calculates their weekly pay
-3. It saves everything to a JSON file
-4. It shows you a summary on screen
-
-## Example of what you'll see
-
-```
-Highridge Construction Company - Weekly Payment System
-Starting payment processing...
-
-Successfully generated 450 workers
-Generating payment slips...
-Successfully generated 450 payment slips
-Payment slips saved to highridge_payment_slips.json
-
-============================================================
-HIGHRIDGE CONSTRUCTION COMPANY - PAYMENT SUMMARY REPORT
-============================================================
-Total Workers Processed: 450
-
-Employee Level Distribution:
-  A1: 89 workers (19.8%)
-  A5-F: 156 workers (34.7%)
-  Standard: 205 workers (45.6%)
-
-Total Gross Payments: $156,789.45
-Total Net Payments: $125,431.56
-Total Deductions: $31,357.89
-============================================================
-
-Payment processing completed successfully!
-```
-
-## Understanding the output file
-
-The program creates a file called `highridge_payment_slips.json` that contains all the payment information. Each worker has:
-
-- Their basic info (name, department, etc.)
-- How much they worked
-- How much they get paid
-- How much is taken out for taxes
-
-## Common problems and solutions
-
-**"Command not found"**
-- Make sure Python or R is installed
-- Try `python` instead of `python3`
-
-**"Permission denied"**
-- Make sure you can write files in this folder
-- Try running as administrator
-
-**"Module not found"**
-- Install the required packages using pip or R
+The suite covers cluster correctness on synthetic data, input validation,
+reproducibility, outlier filtering, feature engineering, and helper logic.

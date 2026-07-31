@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/mac/Documents/workstation/2026/work/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/mac/Documents/workstation/2026/work
+collecting ... collected 22 items
+
+tests/test_kmeans.py::TestKMeansCore::test_separates_obvious_blobs PASSED [  4%]
+tests/test_kmeans.py::TestKMeansCore::test_predict_matches_fit_labels PASSED [  9%]
+tests/test_kmeans.py::TestKMeansCore::test_single_cluster_centroid_is_mean PASSED [ 13%]
+tests/test_kmeans.py::TestKMeansCore::test_k_greater_than_samples_raises PASSED [ 18%]
+tests/test_kmeans.py::TestKMeansCore::test_invalid_k_raises PASSED       [ 22%]
+tests/test_kmeans.py::TestKMeansCore::test_nan_input_raises PASSED       [ 27%]
+tests/test_kmeans.py::TestKMeansCore::test_inf_input_raises PASSED       [ 31%]
+tests/test_kmeans.py::TestKMeansCore::test_non_2d_input_raises PASSED    [ 36%]
+tests/test_kmeans.py::TestKMeansCore::test_empty_input_raises PASSED     [ 40%]
+tests/test_kmeans.py::TestKMeansCore::test_reproducible_with_same_seed PASSED [ 45%]
+tests/test_kmeans.py::TestKMeansCore::test_predict_before_fit_raises PASSED [ 50%]
+tests/test_kmeans.py::TestKMeansCore::test_elbow_returns_sorted_keys PASSED [ 54%]
+tests/test_kmeans.py::TestKMeansCore::test_inertia_never_increases_between_iters PASSED [ 59%]
+tests/test_kmeans.py::TestDataLoader::test_outlier_filtering_removes_bad_rows PASSED [ 63%]
+tests/test_kmeans.py::TestDataLoader::test_absurd_speed_is_filtered_out PASSED [ 68%]
+tests/test_kmeans.py::TestDataLoader::test_compute_features_adds_duration_and_hour PASSED [ 72%]
+tests/test_kmeans.py::TestDataLoader::test_prepare_features_standardises PASSED [ 77%]
+tests/test_kmeans.py::TestDataLoader::test_prepare_features_rejects_nan PASSED [ 81%]
+tests/test_kmeans.py::TestDataLoader::test_load_and_clean_missing_file_raises PASSED [ 86%]
+tests/test_kmeans.py::TestDataLoader::test_load_and_clean_real_file PASSED [ 90%]
+tests/test_kmeans.py::TestMainHelpers::test_pick_elbow_prefers_turn_point PASSED [ 95%]
+tests/test_kmeans.py::TestMainHelpers::test_cluster_profile_aggregates_correctly PASSED [100%]
+
+============================== 22 passed in 6.13s ==============================
